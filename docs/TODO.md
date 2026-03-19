@@ -9,12 +9,12 @@
 
 ## 2. Functional Codebase Enhancements
 - [x] Add input validation and error handling to controllers
-- [ ] Implement inter-service communication (e.g., order calls inventory)
+- [x] Implement inter-service communication (e.g., order calls inventory and product services)
 - [x] Add proper HTTP status codes and responses
 
 ## 3. Testing Suite
 - [x] Add unit tests for UserService (auth-service)
-- [ ] Add unit tests for ProductService (product-service)
+- [x] Add unit tests for ProductService (product-service)
 - [ ] Add unit tests for OrderService (order-service)
 - [ ] Add unit tests for InventoryService (inventory-service)
 - [ ] Add integration tests for API endpoints
@@ -25,7 +25,7 @@
 - [ ] Add artifact build and upload
 
 ## 5. Monitoring & Logging
-- [ ] Add Spring Boot Actuator for metrics
+- [x] Add Spring Boot Actuator for metrics
 - [ ] Configure Prometheus endpoints
 - [ ] Create basic Grafana dashboard setup instructions
 
