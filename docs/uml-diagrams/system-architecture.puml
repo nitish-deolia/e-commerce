@@ -1,0 +1,54 @@
+@startuml E-Commerce System Architecture
+title High-Level System Architecture
+
+package "Client Layer" {
+    [Web Browser]
+    [Mobile App]
+    [Third-party APIs]
+}
+
+package "API Gateway Layer" {
+    [API Gateway :8000]
+    note right
+        • Request Routing
+        • Rate Limiting
+        • JWT Validation
+        • Request Logging
+    end note
+}
+
+package "Microservices Layer" {
+    [Auth Service :8081]
+    [Product Service :8082]
+    [Order Service :8083]
+    [Inventory Service :8084]
+}
+
+package "Data Layer" {
+    database "PostgreSQL :5432" {
+        folder "ecommerce_schema" {
+            [users]
+            [products]
+            [orders]
+            [inventory]
+        }
+    }
+}
+
+[Web Browser] --> [API Gateway :8000]
+[Mobile App] --> [API Gateway :8000]
+[Third-party APIs] --> [API Gateway :8000]
+
+[API Gateway :8000] --> [Auth Service :8081]
+[API Gateway :8000] --> [Product Service :8082]
+[API Gateway :8000] --> [Order Service :8083]
+[API Gateway :8000] --> [Inventory Service :8084]
+
+[Auth Service :8081] --> [PostgreSQL :5432]
+[Product Service :8082] --> [PostgreSQL :5432]
+[Order Service :8083] --> [PostgreSQL :5432]
+[Inventory Service :8084] --> [PostgreSQL :5432]
+
+[Order Service :8083] --> [Product Service :8082] : calls
+[Order Service :8083] --> [Inventory Service :8084] : calls
+@enduml

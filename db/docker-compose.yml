@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: ecommerce-postgres
+    environment:
+      POSTGRES_DB: ecommerce
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+  liquibase:
+    image: liquibase/liquibase:4.24
+    container_name: ecommerce-liquibase
+    depends_on:
+      - postgres
+    environment:
+      LIQUIBASE_COMMAND_URL: jdbc:postgresql://postgres:5432/ecommerce
+      LIQUIBASE_COMMAND_USERNAME: postgres
+      LIQUIBASE_COMMAND_PASSWORD: postgres123
+      LIQUIBASE_COMMAND_CHANGELOG_FILE: changelog/db.changelog-master.yaml
+    volumes:
+      - ./changelog:/liquibase/changelog
+    networks:
+      - ecommerce-network
+    working_dir: /liquibase
+    command: ["liquibase", "--help"]  # Default command, will be overridden
+
+volumes:
+  postgres_data:
+
+networks:
+  ecommerce-network:
+    driver: bridge

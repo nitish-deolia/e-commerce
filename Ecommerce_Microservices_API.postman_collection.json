@@ -9,6 +9,19 @@
       "name": "Auth Service",
       "item": [
         {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8081/actuator/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["actuator", "health"]
+            }
+          }
+        },
+        {
           "name": "Register User",
           "request": {
             "method": "POST",
@@ -20,7 +33,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\"username\":\"testuser\",\"email\":\"test@example.com\",\"password\":\"password123\"}"
+              "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
             },
             "url": {
               "raw": "http://localhost:8081/auth/register",
@@ -43,7 +56,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\"username\":\"testuser\",\"password\":\"password123\"}"
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}"
             },
             "url": {
               "raw": "http://localhost:8081/auth/login",
@@ -60,32 +73,22 @@
       "name": "Product Service",
       "item": [
         {
-          "name": "Get All Products",
+          "name": "Health",
           "request": {
             "method": "GET",
             "url": {
-              "raw": "http://localhost:8082/products",
+              "raw": "http://localhost:8082/actuator/health",
               "protocol": "http",
               "host": ["localhost"],
               "port": "8082",
-              "path": ["products"]
+              "path": ["actuator", "health"]
             }
           }
         },
         {
-          "name": "Create Product",
+          "name": "Get All Products",
           "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\"name\":\"Laptop\",\"description\":\"Gaming Laptop\",\"price\":1200.00,\"category\":\"Electronics\",\"stock\":10}"
-            },
+            "method": "GET",
             "url": {
               "raw": "http://localhost:8082/products",
               "protocol": "http",
@@ -107,12 +110,48 @@
               "path": ["products", "{{productId}}"]
             }
           }
+        },
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Laptop\",\n  \"description\": \"Gaming Laptop\",\n  \"price\": 1200.00,\n  \"category\": \"Electronics\",\n  \"active\": true\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8082/products",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8082",
+              "path": ["products"]
+            }
+          }
         }
       ]
     },
     {
       "name": "Order Service",
       "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8083/actuator/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8083",
+              "path": ["actuator", "health"]
+            }
+          }
+        },
         {
           "name": "Create Order",
           "request": {
@@ -125,7 +164,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\"userId\":1,\"items\":[{\"productId\":1,\"quantity\":2}],\"total\":2400.00}"
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 1\n    }\n  ]\n}"
             },
             "url": {
               "raw": "http://localhost:8083/orders",
@@ -135,19 +174,6 @@
               "path": ["orders"]
             }
           }
-        },
-        {
-          "name": "Get Order by ID",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "http://localhost:8083/orders/{{orderId}}",
-              "protocol": "http",
-              "host": ["localhost"],
-              "port": "8083",
-              "path": ["orders", "{{orderId}}"]
-            }
-          }
         }
       ]
     },
@@ -155,38 +181,47 @@
       "name": "Inventory Service",
       "item": [
         {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8084/actuator/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8084",
+              "path": ["actuator", "health"]
+            }
+          }
+        },
+        {
           "name": "Get Inventory",
           "request": {
             "method": "GET",
             "url": {
-              "raw": "http://localhost:8084/inventory",
+              "raw": "http://localhost:8084/inventory/{{productId}}",
               "protocol": "http",
               "host": ["localhost"],
               "port": "8084",
-              "path": ["inventory"]
+              "path": ["inventory", "{{productId}}"]
             }
           }
         },
         {
           "name": "Update Stock",
           "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\"productId\":1,\"stock\":8}"
-            },
+            "method": "PUT",
             "url": {
-              "raw": "http://localhost:8084/inventory",
+              "raw": "http://localhost:8084/inventory/{{productId}}?stock=5",
               "protocol": "http",
               "host": ["localhost"],
               "port": "8084",
-              "path": ["inventory"]
+              "path": ["inventory", "{{productId}}"],
+              "query": [
+                {
+                  "key": "stock",
+                  "value": "5"
+                }
+              ]
             }
           }
         }
@@ -195,12 +230,16 @@
   ],
   "variable": [
     {
+      "key": "userId",
+      "value": "89eabf7f-7171-4bf3-a4bc-47abafdca828"
+    },
+    {
       "key": "productId",
-      "value": "1"
+      "value": "7118f72f-7749-425a-ada7-6c9597af32b3"
     },
     {
       "key": "orderId",
-      "value": "1"
+      "value": ""
     }
   ]
 }

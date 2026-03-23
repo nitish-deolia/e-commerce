@@ -19,10 +19,51 @@ This project implements a microservices-based e-commerce backend using Java, Spr
 
 ## Setup
 
-1. Install Java 17, Maven, PostgreSQL.
-2. Start PostgreSQL and create database: `createdb ecommerce`
-3. For each service, run `mvn spring-boot:run` in their directories.
-4. Services will run on ports 8081-8084.
+1. Install Java 17+ and Maven.
+2. Start PostgreSQL with Docker and apply the Liquibase schema:
+   `cd db`
+   `docker compose up -d postgres`
+   `docker compose run --rm liquibase liquibase --url=jdbc:postgresql://postgres:5432/ecommerce --username=postgres --password=postgres123 --changeLogFile=changelog/db.changelog-master.yaml update`
+3. Start each service in its own terminal:
+   `cd auth-service && mvn spring-boot:run`
+   `cd product-service && mvn spring-boot:run`
+   `cd order-service && mvn spring-boot:run`
+   `cd inventory-service && mvn spring-boot:run`
+4. Services run on ports 8081-8084 and connect to the local Docker Postgres instance on `localhost:5432`.
+
+## One-Command Docker Setup
+
+From the repo root:
+
+```bash
+docker compose up --build
+```
+
+That command:
+- starts PostgreSQL
+- runs Liquibase migrations
+- builds all four microservices
+- starts the services on ports `8081`-`8084`
+- starts a Swagger landing page on `http://localhost:8090`
+
+To stop everything:
+
+```bash
+docker compose down
+```
+
+## Swagger UI
+
+Each service exposes Swagger UI:
+
+- Auth Service: `http://localhost:8081/swagger-ui.html`
+- Product Service: `http://localhost:8082/swagger-ui.html`
+- Order Service: `http://localhost:8083/swagger-ui.html`
+- Inventory Service: `http://localhost:8084/swagger-ui.html`
+
+When running the root Docker stack, you can use the landing page at:
+
+- `http://localhost:8090`
 
 ## API Endpoints
 

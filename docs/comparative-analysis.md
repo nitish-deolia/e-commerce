@@ -9,6 +9,10 @@ This document compares the initial AI-generated code with the manual refinements
 - **AI-Generated**: Used reserved SQL keywords like "user" and "order" as table names
 - **Manual Fix**: Added `@Table(name = "users")` and `@Table(name = "orders")` annotations to avoid SQL errors
 
+### 1b. Database Schema Alignment
+- **AI-Generated**: Relied on simple JPA defaults with local table generation
+- **Manual Fix**: Aligned services with Liquibase-managed PostgreSQL tables, UUID identifiers, explicit schema names, and enum mappings
+
 ### 2. Security Configuration
 - **AI-Generated**: Used deprecated `WebSecurityConfigurerAdapter` (removed in Spring Security 6)
 - **Manual Fix**: Updated to `SecurityFilterChain` with `HttpSecurity` for Spring Boot 3 compatibility
@@ -24,6 +28,10 @@ This document compares the initial AI-generated code with the manual refinements
 ### 5. Monitoring
 - **AI-Generated**: No monitoring setup
 - **Manual Addition**: Added Spring Boot Actuator to all services with health, info, and metrics endpoints
+
+### 5b. Local Platform Setup
+- **AI-Generated**: Assumed manually managed PostgreSQL
+- **Manual Addition**: Added Docker-based PostgreSQL, Liquibase migration workflow, and a root Docker Compose stack for the full platform
 
 ### 6. Error Handling
 - **AI-Generated**: Basic validation

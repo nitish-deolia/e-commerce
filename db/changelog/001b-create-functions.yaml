@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001b-create-functions
+      author: system
+      comment: Create common database functions
+      changes:
+        - sql:
+            sql: |
+              CREATE OR REPLACE FUNCTION ecommerce.update_updated_at_column()
+              RETURNS TRIGGER AS '
+              BEGIN
+                  NEW.updated_at = CURRENT_TIMESTAMP;
+                  RETURN NEW;
+              END;
+              ' LANGUAGE plpgsql;

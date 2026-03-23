@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -48,9 +49,9 @@ public class UserServiceTest {
     @Test
     public void testLoginSuccess() {
         User user = new User();
-        user.setId(1L);
+        user.setUserId(UUID.randomUUID());
         user.setEmail("test@example.com");
-        user.setPassword("encoded");
+        user.setPasswordHash("encoded");
 
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("password", "encoded")).thenReturn(true);

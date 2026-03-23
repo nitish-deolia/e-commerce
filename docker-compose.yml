@@ -1,0 +1,124 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: ecommerce-postgres
+    environment:
+      POSTGRES_DB: ecommerce
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ecommerce"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  liquibase:
+    image: liquibase/liquibase:4.24
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./db/changelog:/liquibase/changelog
+    working_dir: /liquibase
+    command:
+      - liquibase
+      - --url=jdbc:postgresql://postgres:5432/ecommerce
+      - --username=postgres
+      - --password=postgres123
+      - --changeLogFile=changelog/db.changelog-master.yaml
+      - update
+    restart: "no"
+
+  auth-service:
+    build:
+      context: ./auth-service
+    depends_on:
+      liquibase:
+        condition: service_completed_successfully
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ecommerce
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: ecommerce
+      SERVER_PORT: 8081
+    ports:
+      - "8081:8081"
+
+  product-service:
+    build:
+      context: ./product-service
+    depends_on:
+      liquibase:
+        condition: service_completed_successfully
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ecommerce
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: ecommerce
+      SERVER_PORT: 8082
+    ports:
+      - "8082:8082"
+
+  inventory-service:
+    build:
+      context: ./inventory-service
+    depends_on:
+      liquibase:
+        condition: service_completed_successfully
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ecommerce
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: ecommerce
+      SERVER_PORT: 8084
+    ports:
+      - "8084:8084"
+
+  order-service:
+    build:
+      context: ./order-service
+    depends_on:
+      liquibase:
+        condition: service_completed_successfully
+      product-service:
+        condition: service_started
+      inventory-service:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/ecommerce
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: ecommerce
+      SERVICES_PRODUCT_URL: http://product-service:8082
+      SERVICES_INVENTORY_URL: http://inventory-service:8084
+      SERVER_PORT: 8083
+    ports:
+      - "8083:8083"
+
+  swagger-portal:
+    image: nginx:alpine
+    depends_on:
+      auth-service:
+        condition: service_started
+      product-service:
+        condition: service_started
+      order-service:
+        condition: service_started
+      inventory-service:
+        condition: service_started
+    ports:
+      - "8090:80"
+    volumes:
+      - ./swagger-portal/index.html:/usr/share/nginx/html/index.html:ro
+
+volumes:
+  postgres_data:

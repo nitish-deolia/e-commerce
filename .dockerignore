@@ -1,0 +1,9 @@
+.git
+.github
+.idea
+**/target
+**/*.log
+docs
+db/postgres_data
+output.txt
+*.pdf

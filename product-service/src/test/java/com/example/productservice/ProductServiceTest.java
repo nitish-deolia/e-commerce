@@ -9,9 +9,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,11 +35,11 @@ class ProductServiceTest {
     @Test
     void testGetAllProducts() {
         Product product1 = new Product();
-        product1.setId(1L);
+        product1.setProductId(UUID.randomUUID());
         product1.setName("Product 1");
 
         Product product2 = new Product();
-        product2.setId(2L);
+        product2.setProductId(UUID.randomUUID());
         product2.setName("Product 2");
 
         when(productRepository.findAll()).thenReturn(Arrays.asList(product1, product2));
@@ -50,17 +52,18 @@ class ProductServiceTest {
 
     @Test
     void testGetProductById() {
+        UUID productId = UUID.randomUUID();
         Product product = new Product();
-        product.setId(1L);
+        product.setProductId(productId);
         product.setName("Test Product");
 
-        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
-        Optional<Product> result = productService.getProductById(1L);
+        Optional<Product> result = productService.getProductById(productId);
 
         assertTrue(result.isPresent());
         assertEquals("Test Product", result.get().getName());
-        verify(productRepository, times(1)).findById(1L);
+        verify(productRepository, times(1)).findById(productId);
     }
 
     @Test
@@ -78,39 +81,42 @@ class ProductServiceTest {
 
     @Test
     void testUpdateProduct() {
+        UUID productId = UUID.randomUUID();
         Product existingProduct = new Product();
-        existingProduct.setId(1L);
+        existingProduct.setProductId(productId);
         existingProduct.setName("Old Name");
 
         Product updatedDetails = new Product();
         updatedDetails.setName("New Name");
-        updatedDetails.setPrice(10.0);
+        updatedDetails.setPrice(BigDecimal.TEN);
 
-        when(productRepository.findById(1L)).thenReturn(Optional.of(existingProduct));
+        when(productRepository.findById(productId)).thenReturn(Optional.of(existingProduct));
         when(productRepository.save(any(Product.class))).thenReturn(existingProduct);
 
-        Product result = productService.updateProduct(1L, updatedDetails);
+        Product result = productService.updateProduct(productId, updatedDetails);
 
         assertNotNull(result);
         assertEquals("New Name", result.getName());
-        verify(productRepository, times(1)).findById(1L);
+        verify(productRepository, times(1)).findById(productId);
         verify(productRepository, times(1)).save(existingProduct);
     }
 
     @Test
     void testUpdateProductNotFound() {
-        when(productRepository.findById(1L)).thenReturn(Optional.empty());
+        UUID productId = UUID.randomUUID();
+        when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
-        Product result = productService.updateProduct(1L, new Product());
+        Product result = productService.updateProduct(productId, new Product());
 
         assertNull(result);
-        verify(productRepository, times(1)).findById(1L);
+        verify(productRepository, times(1)).findById(productId);
     }
 
     @Test
     void testDeleteProduct() {
-        productService.deleteProduct(1L);
+        UUID productId = UUID.randomUUID();
+        productService.deleteProduct(productId);
 
-        verify(productRepository, times(1)).deleteById(1L);
+        verify(productRepository, times(1)).deleteById(productId);
     }
 }

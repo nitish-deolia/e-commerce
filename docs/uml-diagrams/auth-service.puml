@@ -1,0 +1,39 @@
+@startuml Auth Service Class Diagram
+class User {
+    - userId: UUID
+    - username: String
+    - email: String
+    - passwordHash: String
+    - role: Role
+    - createdAt: Date
+    - updatedAt: Date
+    + register()
+    + login()
+    + updateProfile()
+    + resetPassword()
+}
+
+class Role {
+    - roleId: UUID
+    - name: String
+    - permissions: List
+    + canCreate()
+    + canRead()
+    + canUpdate()
+    + canDelete()
+}
+
+class AuthToken {
+    - tokenId: UUID
+    - userId: UUID
+    - token: String
+    - expiresAt: Date
+    - refreshToken: String
+    + generateToken()
+    + validateToken()
+    + refreshToken()
+    + revokeToken()
+}
+
+User --> Role : has
+@enduml

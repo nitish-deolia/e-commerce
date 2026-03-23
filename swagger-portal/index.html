@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Commerce API Docs</title>
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --card: #fffaf2;
+      --ink: #1f2933;
+      --accent: #1d6f5f;
+      --accent-soft: #d8efe9;
+      --border: #d5c8b6;
+    }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      background: radial-gradient(circle at top left, #fffdf8, var(--bg));
+      color: var(--ink);
+    }
+
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 20px 64px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: 2.6rem;
+    }
+
+    p {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      max-width: 760px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin-top: 32px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 12px 30px rgba(31, 41, 51, 0.08);
+    }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 1.3rem;
+    }
+
+    .card a {
+      display: inline-block;
+      margin-top: 10px;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 700;
+      background: var(--accent-soft);
+      padding: 10px 14px;
+      border-radius: 999px;
+    }
+
+    .hint {
+      margin-top: 28px;
+      padding: 16px 18px;
+      background: #fff;
+      border-left: 4px solid var(--accent);
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>E-Commerce Swagger Portal</h1>
+    <p>The Docker stack exposes Swagger UI for each microservice. Use the links below after <code>docker compose up --build</code> finishes.</p>
+
+    <section class="grid">
+      <article class="card">
+        <h2>Auth Service</h2>
+        <p>Registration, login, and auth-related endpoints.</p>
+        <a href="http://localhost:8081/swagger-ui.html">Open Swagger UI</a>
+      </article>
+      <article class="card">
+        <h2>Product Service</h2>
+        <p>Catalog and product management endpoints.</p>
+        <a href="http://localhost:8082/swagger-ui.html">Open Swagger UI</a>
+      </article>
+      <article class="card">
+        <h2>Order Service</h2>
+        <p>Order creation and orchestration endpoints.</p>
+        <a href="http://localhost:8083/swagger-ui.html">Open Swagger UI</a>
+      </article>
+      <article class="card">
+        <h2>Inventory Service</h2>
+        <p>Inventory lookup and stock update endpoints.</p>
+        <a href="http://localhost:8084/swagger-ui.html">Open Swagger UI</a>
+      </article>
+    </section>
+
+    <div class="hint">
+      Open this landing page at <code>http://localhost:8090</code>. Docker Compose can start the portal automatically, but it cannot reliably force your host browser to open on every OS by itself.
+    </div>
+  </main>
+</body>
+</html>

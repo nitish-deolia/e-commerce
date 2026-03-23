@@ -1,0 +1,107 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-create-inventory-table
+      author: system
+      comment: Create inventory table for stock management
+      changes:
+        - createTable:
+            tableName: inventory
+            schemaName: ecommerce
+            columns:
+              - column:
+                  name: inventory_id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: quantity
+                  type: INTEGER
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: reorder_level
+                  type: INTEGER
+                  defaultValueNumeric: 10
+                  constraints:
+                    nullable: false
+              - column:
+                  name: warehouse
+                  type: VARCHAR(100)
+                  defaultValue: MAIN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: inventory_history
+            schemaName: ecommerce
+            columns:
+              - column:
+                  name: history_id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: inventory_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity_changed
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: reason
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: UUID
+                  constraints:
+                    nullable: true
+              - column:
+                  name: timestamp
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: inventory
+            baseColumnNames: product_id
+            baseTableSchemaName: ecommerce
+            referencedTableName: products
+            referencedColumnNames: product_id
+            referencedTableSchemaName: ecommerce
+            constraintName: fk_inventory_product_id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: inventory_history
+            baseColumnNames: inventory_id
+            baseTableSchemaName: ecommerce
+            referencedTableName: inventory
+            referencedColumnNames: inventory_id
+            referencedTableSchemaName: ecommerce
+            constraintName: fk_inventory_history_inventory_id
+            onDelete: CASCADE
+        - sql:
+            sql: |
+              CREATE TRIGGER update_inventory_updated_at
+                  BEFORE UPDATE ON ecommerce.inventory
+                  FOR EACH ROW EXECUTE FUNCTION ecommerce.update_updated_at_column();

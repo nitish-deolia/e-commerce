@@ -1,0 +1,25 @@
+@startuml Order Placement Sequence
+title Order Placement Flow
+
+actor Customer
+participant OrderService
+participant ProductService
+participant InventoryService
+database Database
+
+Customer -> OrderService: POST /orders\n{userId, items[]}
+OrderService -> ProductService: GET /products/{productId}
+ProductService --> OrderService: Product details
+OrderService -> InventoryService: GET /inventory/{productId}
+InventoryService --> OrderService: Stock level
+
+alt Stock Available
+    OrderService -> InventoryService: PUT /inventory/{productId}\n{quantityChange: -N}
+    InventoryService --> OrderService: Success
+    OrderService -> Database: INSERT order
+    Database --> OrderService: Order created
+    OrderService --> Customer: 201 Created\n{orderId, total}
+else Stock Insufficient
+    OrderService --> Customer: 400 Bad Request\n{error: insufficient_stock}
+end
+@enduml

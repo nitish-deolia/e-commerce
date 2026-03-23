@@ -1,0 +1,121 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-create-orders-tables
+      author: system
+      comment: Create orders and order_items tables
+      changes:
+        - sql:
+            sql: CREATE TYPE ecommerce.order_status AS ENUM ('PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED');
+        - createTable:
+            tableName: orders
+            schemaName: ecommerce
+            columns:
+              - column:
+                  name: order_id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: order_date
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: ecommerce.order_status
+                  defaultValue: PENDING
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_price
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: order_items
+            schemaName: ecommerce
+            columns:
+              - column:
+                  name: item_id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: unit_price
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: subtotal
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: orders
+            baseColumnNames: user_id
+            baseTableSchemaName: ecommerce
+            referencedTableName: users
+            referencedColumnNames: user_id
+            referencedTableSchemaName: ecommerce
+            constraintName: fk_orders_user_id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: order_items
+            baseColumnNames: order_id
+            baseTableSchemaName: ecommerce
+            referencedTableName: orders
+            referencedColumnNames: order_id
+            referencedTableSchemaName: ecommerce
+            constraintName: fk_order_items_order_id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: order_items
+            baseColumnNames: product_id
+            baseTableSchemaName: ecommerce
+            referencedTableName: products
+            referencedColumnNames: product_id
+            referencedTableSchemaName: ecommerce
+            constraintName: fk_order_items_product_id
+            onDelete: RESTRICT
+        - sql:
+            sql: |
+              CREATE TRIGGER update_orders_updated_at
+                  BEFORE UPDATE ON ecommerce.orders
+                  FOR EACH ROW EXECUTE FUNCTION ecommerce.update_updated_at_column();

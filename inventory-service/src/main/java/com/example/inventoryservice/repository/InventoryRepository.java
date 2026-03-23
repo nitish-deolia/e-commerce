@@ -3,5 +3,9 @@ package com.example.inventoryservice.repository;
 import com.example.inventoryservice.model.Inventory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface InventoryRepository extends JpaRepository<Inventory, Long> {
+import java.util.Optional;
+import java.util.UUID;
+
+public interface InventoryRepository extends JpaRepository<Inventory, UUID> {
+    Optional<Inventory> findByProductId(UUID productId);
 }

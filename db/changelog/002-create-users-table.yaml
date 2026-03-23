@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-users-table
+      author: system
+      comment: Create users table for authentication
+      changes:
+        - sql:
+            sql: CREATE TYPE ecommerce.user_role AS ENUM ('CUSTOMER', 'ADMIN');
+        - createTable:
+            tableName: users
+            schemaName: ecommerce
+            columns:
+              - column:
+                  name: user_id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: username
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password_hash
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: ecommerce.user_role
+                  defaultValue: CUSTOMER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false

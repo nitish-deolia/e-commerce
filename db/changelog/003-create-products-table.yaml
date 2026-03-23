@@ -1,0 +1,96 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-products-table
+      author: system
+      comment: Create products table for catalog management
+      changes:
+        - createTable:
+            tableName: products
+            schemaName: ecommerce
+            columns:
+              - column:
+                  name: product_id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: price
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - sql:
+            sql: |
+              CREATE TRIGGER update_products_updated_at
+                  BEFORE UPDATE ON ecommerce.products
+                  FOR EACH ROW EXECUTE FUNCTION ecommerce.update_updated_at_column();
+        - createTable:
+            tableName: categories
+            schemaName: ecommerce
+            columns:
+              - column:
+                  name: category_id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: description
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: products
+            baseColumnNames: category
+            baseTableSchemaName: ecommerce
+            referencedTableName: categories
+            referencedColumnNames: name
+            referencedTableSchemaName: ecommerce
+            constraintName: fk_products_category

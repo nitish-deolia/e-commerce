@@ -39,6 +39,6 @@
 - [x] Document productivity and quality insights
 
 ## Validation
-- [x] Run full build and tests (auth-service tested)
-- [x] Verify APIs work (services started, Postman collection created)
+- [x] Run build verification for all four services
+- [x] Verify APIs work against Docker PostgreSQL + Liquibase schema
 - [ ] Check coverage report

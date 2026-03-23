@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-schema
+      author: system
+      comment: Create ecommerce schema
+      changes:
+        - sql:
+            sql: CREATE SCHEMA IF NOT EXISTS ecommerce;
